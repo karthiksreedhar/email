@@ -1,0 +1,739 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+    <script>
+        /*
+            INIT
+        */
+        var headline_data = {{data|tojson}} 
+
+        // to pretty print headline_data as string to copy and paste for saving
+        function print_headline_data(){
+            console.log(JSON.stringify(headline_data, null, 3));
+        }
+        
+
+        $(function() {
+            load_headline_data()
+
+        });
+
+        function load_headline_data(){
+            //load headline and summary
+            headline = $.trim(headline_data["headline"])
+            if(headline != ""){
+                show_headline(headline_data)
+            }else{
+                show_headline_editing(headline_data)
+            }
+
+            // load keywords
+            keywords = headline_data["keywords"]
+            if(keywords.length > 0){
+                show_keywords(headline_data)
+            }
+
+             //load images
+            generations_list = headline_data["generations"]
+            if(generations_list.length > 0){
+                show_generations(generations_list, true)
+            }             
+        }
+
+        /*
+            HEADLINES
+        */
+
+        $(function() {
+            $("#submit_headline_btn").click(function(){
+                let headline = $("#headline_input").val()
+                let summary = $("#summary_input").val()
+                let content = $("#content_input").val()
+                let tone = $("#tone_input").val()
+                submit_headline(headline, summary, content, tone)
+            })
+
+            $("#edit_headline_btn").click(function(){
+                show_headline_editing(headline_data)
+            })
+
+            $("#rewrite_btn").click(function(){
+                let headline = $("#headline_input").val()
+                let summary = $("#summary_input").val()
+                let content = $("#content_input").val()
+                let tone = $("#tone_input").val()
+                submit_headline(headline, summary, content, tone)
+            })
+        });
+
+        $(function() {
+            $("#formality_inc_btn").click(function(){
+                let headline = $("#headline_input").val()
+                let summary = $("#summary_input").val()
+                let content = $("#content_input").val()
+                let tone = $("#tone_input").val()
+                increase_formality(headline, summary, content, tone)
+                // show_new_gen()
+            })
+            
+            $("#formality_dec_btn").click(function(){
+                let headline = $("#headline_input").val()
+                let summary = $("#summary_input").val()
+                let content = $("#content_input").val()
+                let tone = $("#tone_input").val()
+                decrease_formality(headline, summary, content, tone)
+                // show_new_gen()
+            })
+
+            $("#directness_inc_btn").click(function(){
+                let headline = $("#headline_input").val()
+                let summary = $("#summary_input").val()
+                let content = $("#content_input").val()
+                let tone = $("#tone_input").val()
+                increase_directness(headline, summary, content, tone)
+                // show_new_gen()
+            })
+
+            $("#directness_dec_btn").click(function(){
+                let headline = $("#headline_input").val()
+                let summary = $("#summary_input").val()
+                let content = $("#content_input").val()
+                let tone = $("#tone_input").val()
+                decrease_directness(headline, summary, content, tone)
+                // show_new_gen()
+            })
+
+            $("#length_inc_btn").click(function(){
+                let headline = $("#headline_input").val()
+                let summary = $("#summary_input").val()
+                let content = $("#content_input").val()
+                let tone = $("#tone_input").val()
+                increase_length(headline, summary, content, tone)
+                // show_new_gen()
+            })
+
+            $("#length_dec_btn").click(function(){
+                let headline = $("#headline_input").val()
+                let summary = $("#summary_input").val()
+                let content = $("#content_input").val()
+                let tone = $("#tone_input").val()
+                decrease_length(headline, summary, content, tone)
+                // show_new_gen()
+            })
+
+            $("#tone_inc_btn").click(function(){
+                let headline = $("#headline_input").val()
+                let summary = $("#summary_input").val()
+                let content = $("#content_input").val()
+                let tone = $("#tone_input").val()
+                increase_tone(headline, summary, content, tone)
+            })
+
+            $("#tone_dec_btn").click(function(){
+                let headline = $("#headline_input").val()
+                let summary = $("#summary_input").val()
+                let content = $("#content_input").val()
+                let tone = $("#tone_input").val()
+                decrease_tone(headline, summary, content, tone)
+                // show_new_gen()
+            })
+
+            $("#undo_btn").click(function(){
+                let headline = $("#headline_input").val()
+                let summary = $("#summary_input").val()
+                let content = $("#content_input").val()
+                let tone = $("#tone_input").val()
+                undo_sauce(headline, summary, content, tone)
+                // show_new_gen()
+            })
+
+        });
+
+        function show_headline_editing(data){
+            $("#edit_headline_div").show()
+            $("#show_headline_div").hide()
+
+            $("#headline_input").val(data["headline"])
+            $("#summary_input").val(data["summary"])
+            $("#content_input").val(data["content"])
+            $("#tone_input").val(data["tone"])
+        }
+
+        function show_headline(data){
+            $("#edit_headline_div").hide()
+            $("#show_headline_div").show()
+
+            $("#show_headline").text(data["headline"])
+            $("#show_summary").text(data["summary"])
+            $("#show_content").text(data["content"])
+            $("#show_tone").text(data["tone"])
+            $("#generated_email").text(data["generations"])
+        }
+
+        function show_new_gen(){
+            $("#generated_email").text(headline_data["generations"])
+        }
+
+        function increase_formality(headline, summary, content, tone){
+            let data = {"headline":headline, "summary":summary, "content":content, "tone":tone}
+            $.ajax({
+                type: "POST",
+                url: "/increase_formality",                
+                dataType : "json",
+                contentType: "application/json; charset=utf-8",
+                
+                data : JSON.stringify(data),
+                beforeSend: function () { 
+                    $("#spinner-div").show()
+                },
+                success: function(data, text){
+                    // console.log("submit_headline response")
+                    // console.log(data)                
+                    headline_data = data
+                    // show_headline(data)
+                },
+                error: function(request, status, error){
+                    console.log("Error");
+                    console.log(request)
+                    console.log(status)
+                    console.log(error)
+                },
+                complete: function () { 
+                    $("#spinner-div").hide()
+                },
+            }); 
+        }
+
+        function decrease_formality(headline, summary, content, tone){
+            let data = {"headline":headline, "summary":summary, "content":content, "tone":tone}
+            $.ajax({
+                type: "POST",
+                url: "/decrease_formality",                
+                dataType : "json",
+                contentType: "application/json; charset=utf-8",
+                
+                data : JSON.stringify(data),
+                beforeSend: function () { 
+                    $("#spinner-div").show()
+                },
+                success: function(data, text){
+                    // console.log("submit_headline response")
+                    // console.log(data)                
+                    headline_data = data
+                    show_headline(data)
+                },
+                error: function(request, status, error){
+                    console.log("Error");
+                    console.log(request)
+                    console.log(status)
+                    console.log(error)
+                },
+                complete: function () { 
+                    $("#spinner-div").hide()
+                },
+            }); 
+        }
+
+        function undo_sauce(headline, summary, content, tone){
+            let data = {"headline":headline, "summary":summary, "content":content, "tone":tone}
+            $.ajax({
+                type: "POST",
+                url: "/undo_sauce",                
+                dataType : "json",
+                contentType: "application/json; charset=utf-8",
+                
+                data : JSON.stringify(data),
+                beforeSend: function () { 
+                    $("#spinner-div").show()
+                },
+                success: function(data, text){
+                    // console.log("submit_headline response")
+                    // console.log(data)                
+                    headline_data = data
+                    show_headline(data)
+                },
+                error: function(request, status, error){
+                    console.log("Error");
+                    console.log(request)
+                    console.log(status)
+                    console.log(error)
+                },
+                complete: function () { 
+                    $("#spinner-div").hide()
+                },
+            }); 
+        }
+
+        function increase_directness(headline, summary, content, tone){
+            let data = {"headline":headline, "summary":summary, "content":content, "tone":tone}
+            $.ajax({
+                type: "POST",
+                url: "/increase_directness",                
+                dataType : "json",
+                contentType: "application/json; charset=utf-8",
+                
+                data : JSON.stringify(data),
+                beforeSend: function () { 
+                    $("#spinner-div").show()
+                },
+                success: function(data, text){
+                    // console.log("submit_headline response")
+                    // console.log(data)                
+                    headline_data = data
+                    show_headline(data)
+                },
+                error: function(request, status, error){
+                    console.log("Error");
+                    console.log(request)
+                    console.log(status)
+                    console.log(error)
+                },
+                complete: function () { 
+                    $("#spinner-div").hide()
+                },
+            }); 
+        }
+
+        function decrease_directness(headline, summary, content, tone){
+            let data = {"headline":headline, "summary":summary, "content":content, "tone":tone}
+            $.ajax({
+                type: "POST",
+                url: "/decrease_directness",                
+                dataType : "json",
+                contentType: "application/json; charset=utf-8",
+                
+                data : JSON.stringify(data),
+                beforeSend: function () { 
+                    $("#spinner-div").show()
+                },
+                success: function(data, text){
+                    // console.log("submit_headline response")
+                    // console.log(data)                
+                    headline_data = data
+                    show_headline(data)
+                },
+                error: function(request, status, error){
+                    console.log("Error");
+                    console.log(request)
+                    console.log(status)
+                    console.log(error)
+                },
+                complete: function () { 
+                    $("#spinner-div").hide()
+                },
+            }); 
+        }
+
+        function increase_tone(headline, summary, content, tone){
+            let data = {"headline":headline, "summary":summary, "content":content, "tone":tone}
+            $.ajax({
+                type: "POST",
+                url: "/increase_tone",                
+                dataType : "json",
+                contentType: "application/json; charset=utf-8",
+                
+                data : JSON.stringify(data),
+                beforeSend: function () { 
+                    $("#spinner-div").show()
+                },
+                success: function(data, text){
+                    // console.log("submit_headline response")
+                    // console.log(data)                
+                    headline_data = data
+                    show_headline(data)
+                },
+                error: function(request, status, error){
+                    console.log("Error");
+                    console.log(request)
+                    console.log(status)
+                    console.log(error)
+                },
+                complete: function () { 
+                    $("#spinner-div").hide()
+                },
+            }); 
+        }
+
+        function decrease_tone(headline, summary, content, tone){
+            let data = {"headline":headline, "summary":summary, "content":content, "tone":tone}
+            $.ajax({
+                type: "POST",
+                url: "/decrease_tone",                
+                dataType : "json",
+                contentType: "application/json; charset=utf-8",
+                
+                data : JSON.stringify(data),
+                beforeSend: function () { 
+                    $("#spinner-div").show()
+                },
+                success: function(data, text){
+                    // console.log("submit_headline response")
+                    // console.log(data)                
+                    headline_data = data
+                    show_headline(data)
+                },
+                error: function(request, status, error){
+                    console.log("Error");
+                    console.log(request)
+                    console.log(status)
+                    console.log(error)
+                },
+                complete: function () { 
+                    $("#spinner-div").hide()
+                },
+            }); 
+        }
+
+        function increase_length(headline, summary, content, tone){
+            let data = {"headline":headline, "summary":summary, "content":content, "tone":tone}
+            $.ajax({
+                type: "POST",
+                url: "/increase_length",                
+                dataType : "json",
+                contentType: "application/json; charset=utf-8",
+                
+                data : JSON.stringify(data),
+                beforeSend: function () { 
+                    $("#spinner-div").show()
+                },
+                success: function(data, text){
+                    // console.log("submit_headline response")
+                    // console.log(data)                
+                    headline_data = data
+                    show_headline(data)
+                },
+                error: function(request, status, error){
+                    console.log("Error");
+                    console.log(request)
+                    console.log(status)
+                    console.log(error)
+                },
+                complete: function () { 
+                    $("#spinner-div").hide()
+                },
+            }); 
+        }
+
+        function decrease_length(headline, summary, content, tone){
+            let data = {"headline":headline, "summary":summary, "content":content, "tone":tone}
+            $.ajax({
+                type: "POST",
+                url: "/decrease_length",                
+                dataType : "json",
+                contentType: "application/json; charset=utf-8",
+                
+                data : JSON.stringify(data),
+                beforeSend: function () { 
+                    $("#spinner-div").show()
+                },
+                success: function(data, text){
+                    // console.log("submit_headline response")
+                    // console.log(data)                
+                    headline_data = data
+                    show_headline(data)
+                },
+                error: function(request, status, error){
+                    console.log("Error");
+                    console.log(request)
+                    console.log(status)
+                    console.log(error)
+                },
+                complete: function () { 
+                    $("#spinner-div").hide()
+                },
+            }); 
+        }
+
+        function submit_headline(headline, summary, content, tone){
+            let data = {"headline":headline, "summary":summary, "content":content, "tone":tone}
+            $.ajax({
+                type: "POST",
+                url: "/submit_headline",                
+                dataType : "json",
+                contentType: "application/json; charset=utf-8",
+                
+                data : JSON.stringify(data),
+                beforeSend: function () { 
+                    $("#spinner-div").show()
+                },
+                success: function(data, text){
+                    // console.log("submit_headline response")
+                    // console.log(data)                
+                    headline_data = data
+                    show_headline(data)
+                },
+                error: function(request, status, error){
+                    console.log("Error");
+                    console.log(request)
+                    console.log(status)
+                    console.log(error)
+                },
+                complete: function () { 
+                    $("#spinner-div").hide()
+                },
+            }); 
+        }
+
+        function edit_headline(){
+            show_headline_editing(headline_data)
+        }
+
+        /*
+            KEYWORDS
+        */
+
+        $(function() {
+            $("#get_keywords").click(function(){                
+                get_keywords_gpt()
+            })
+        });
+
+
+        function show_keywords(data){
+            let keywords = data["keywords"]            
+            $("#display_keywords").empty()
+            $.each(keywords, function(i, item){
+                let new_keyword_div = $("<button class='keyword_div'>") 
+                $(new_keyword_div).text(item).click(function(x){
+                    console.log("item:"+item)
+                    data["item"] = item
+                    
+                    $.ajax({
+                        type: "POST",
+                        url: "/get_key",                
+                        dataType : "json",
+                        contentType: "application/json; charset=utf-8",
+                        
+                        data : JSON.stringify(data),
+                        beforeSend: function () { 
+                            $("#spinner-div").show()
+                        },
+                        success: function(data, text){
+                            console.log("get user selection")
+                            console.log(data)                
+                            headline_data = data
+                            // show_headline(data)
+                        },
+                        error: function(request, status, error){
+                            console.log("Error");
+                            console.log(request)
+                            console.log(status)
+                            console.log(error)
+                        },
+                        complete: function () { 
+                            $("#spinner-div").hide()
+                        },
+                    }); 
+
+
+                })
+                $("#display_keywords").append(new_keyword_div)
+            })
+        }
+
+        function get_keywords_gpt(){
+            // console.log(headline)
+            // console.log(summary)
+            let data = {}//{"headline":headline,"summary":summary}
+            $.ajax({
+                type: "POST",
+                url: "/get_keywords",                
+                dataType : "json",
+                contentType: "application/json; charset=utf-8",
+                data : JSON.stringify(data),
+                beforeSend: function () { 
+                    $("#spinner-div").show()
+                },
+                success: function(data, text){
+                    console.log("submit_headline response")
+                    console.log(data)
+                    headline_data = data
+
+                    show_keywords(headline_data)
+
+                },
+                error: function(request, status, error){
+                    console.log("Error");
+                    console.log(request)
+                    console.log(status)
+                    console.log(error)
+                },
+                complete: function () { 
+                    $("#spinner-div").hide()
+                },
+            }); 
+        }
+
+        /*
+            IMAGE GENERATIONS
+        */
+
+        $(function() {
+            $("#get_images_headline_btn").click(function(){
+                console.log("get_images_headline_btn")
+                let prompt = headline_data["headline"]
+                get_images(prompt)
+            })
+
+            
+        });
+
+        function get_images(prompt){
+
+            // alert(headline_data.keys)
+            // console.log(headline)
+            // console.log(summary)
+
+
+            let data = {"prompt":prompt}
+            $.ajax({
+                type: "POST",
+                url: "/get_images",                
+                dataType : "json",
+                contentType: "application/json; charset=utf-8",
+                data : JSON.stringify(data),
+                beforeSend: function () { 
+                    $("#spinner-div").show()
+                },
+                success: function(data, text){
+                    console.log("get_images response")
+                    console.log(data)  
+                    let prompt = data["prompt"]
+                    let url = data["url"]
+
+                    let new_generations_list = data
+                        // for i in new_images:
+                    $.each(new_generations_list, function(i, gen) {
+                        headline_data["generations"].push(gen) 
+                    })
+                    
+                    let hed = headline_data["generations"][0]
+                    alert("A song by " + headline_data["item"] + " about " + headline_data["summary"] + ".\n" + hed)
+                    // show_generations(headline_data(hed))
+
+                },
+                error: function(request, status, error){
+                    console.log("Error");
+                    console.log(request)
+                    console.log(status)
+                    console.log(error)
+                },
+                complete: function () { 
+                    $("#spinner-div").hide()
+                },
+            })
+            // alert("two")
+            // show_generations(headline_data["generations"][0])
+
+
+        }
+
+
+        function show_generations(generations_list){  
+            alert(generations_list)       
+            // $("#div").empty()
+
+
+            // $.each(generations_list, function(i,item){
+            //     // console.log(item)
+            //     let id = item["id"]
+            //     let is_deleted = item["is_deleted"]
+                
+            //     if(is_deleted!="true"){
+            //         let prompt = item["prompt"]
+            //         let url = item["url"]
+            //         let song = data["generations"]
+
+            //         let new_gen_div = $("<div id='"+id+"'><div>"+prompt+song)
+
+            //         alert(new_gen_div)
+                
+            //         $("div").append(new_gen_div)
+            //     }
+            // }) 
+
+            // $("div").append(generations_list[0])
+
+
+            // alert(data["generations"])
+            // $("#show_generations_div").text(data["generations"][0])
+            // $("#show_summary").text(data["item"])
+
+        }
+    </script>  
+
+    <div class="row">
+
+        <div id="explore_text" class="col-md-4" >
+            <b>Input Information</b>
+            <div id="edit_headline_div">                
+                    Broad Context<br>
+                    <textarea id="headline_input" placeholder="Please provide the broad context for your email, written in the first person. Ex. I am writing a cold-email or I am making a first impression" rows="4" cols="40"></textarea>
+                    <br>
+                    Name and Relationship to Recipient<br>
+                    <textarea id="summary_input" placeholder="Ex. Grace, a recruiter at an investment bank" rows="2" cols="40"></textarea>
+                    <br>
+                    Message Content<br>
+                    <textarea id="content_input" placeholder="Please provide as much context for the system as possible. Ex. I am inquiring about summer internship opportunities for college underclassmen with programming experience " rows="5" cols="40"></textarea>
+                    <br>
+                    Type of Tone<br>
+                    <textarea id="tone_input" placeholder="Ex. respectful but casual, apologetic" rows="4" cols="40"></textarea>
+                    <br>
+                    <button id="submit_headline_btn" type="button">Generate Email</button>                
+            </div>
+            <div id="show_headline_div">
+                    <text>Broad Context</text>
+                    <div id="show_headline" ></div>
+                    <text>Relationship to Recipient</text>
+                    <div id="show_summary" ></div>
+                    <text>Message Content</text>
+                    <div id="show_content" ></div>
+                    <text>Type of Tone</text>
+                    <div id="show_tone" ></div>
+                    <button id="edit_headline_btn" type="button">Edit</button>
+            </div>
+        </div>
+
+        <div id="keywords_to_select" class="col-md-4">
+            <b>Generated Email</b>
+            <div id="generated_email"></div>
+        </div>    
+
+        <!--
+        <div id="see_generations" class="col-md-4">
+            See Images <button id="get_images_headline_btn" type="button">Get images for headline</button>
+            <div class="row" id="gallery">
+                
+            </div>
+        -->
+        <div id="see_generations" class="col-md-4">
+            <b>Sliders</b>
+            <div>Formality
+                <button id="formality_inc_btn" type="button">Increase</button>
+                <button id="formality_dec_btn" type="button">Decrease</button>
+            </div>
+            <div>Directness
+                <button id="directness_inc_btn" type="button">Increase</button>
+                <button id="directness_dec_btn" type="button">Decrease</button>
+            </div>
+            <div>Tone Emphasis
+                <button id="tone_inc_btn" type="button">Increase</button>
+                <button id="tone_dec_btn" type="button">Decrease</button>
+            </div>
+            <div>Length
+                <button id="length_inc_btn" type="button">Increase</button>
+                <button id="length_dec_btn" type="button">Decrease</button>
+            </div>
+            <br>
+            <div>
+                <button id="undo_btn" type="button">Return to Previous Version</button>
+                <button id="rewrite_btn" type="button">Regenerate</button>
+            </div>
+        </div>
+        
+    </div>
+
+
+{% endblock %}
+
