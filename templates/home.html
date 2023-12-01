@@ -8,6 +8,7 @@
         */
         var headline_data = {{data|tojson}} 
 
+
         // to pretty print headline_data as string to copy and paste for saving
         function print_headline_data(){
             console.log(JSON.stringify(headline_data, null, 3));
@@ -58,6 +59,10 @@
                 show_headline_editing(headline_data)
             })
 
+            $("#edit_headline_btn_two").click(function(){
+                show_headline_editing(headline_data)
+            })
+
             $("#rewrite_btn").click(function(){
                 let headline = $("#headline_input").val()
                 let summary = $("#summary_input").val()
@@ -68,13 +73,46 @@
         });
 
         $(function() {
+            $("#first_submission").click(function(){
+                let headline = $("#headline_input").val();
+
+                first_submission(headline)
+            })
+
+            $("#first_submission_two").click(function(){
+                let headline = $("#headline_input").val();
+
+                first_submission_two(headline)
+            })
+
+            $("#second_submission").click(function(){
+                let new_ = $("#new_input").val();
+                let last = $("#last_input").val();
+                let lastlast = $("#lastlast_input").val();
+
+                second_submission(new_, last, lastlast)
+                
+            })
+
+            $("#back_headline_btn").click(function(){
+                final_backer()
+            })
+        });
+
+        $(function() {
+            $("#Feedback").click(function(){
+                give_feedback()
+            })
+        });
+
+        $(function() {
             $("#formality_inc_btn").click(function(){
                 let headline = $("#headline_input").val()
                 let summary = $("#summary_input").val()
                 let content = $("#content_input").val()
                 let tone = $("#tone_input").val()
                 increase_formality(headline, summary, content, tone)
-                // show_new_gen()
+                show_new_gen()
             })
             
             $("#formality_dec_btn").click(function(){
@@ -83,7 +121,7 @@
                 let content = $("#content_input").val()
                 let tone = $("#tone_input").val()
                 decrease_formality(headline, summary, content, tone)
-                // show_new_gen()
+                show_new_gen()
             })
 
             $("#directness_inc_btn").click(function(){
@@ -110,7 +148,7 @@
                 let content = $("#content_input").val()
                 let tone = $("#tone_input").val()
                 increase_length(headline, summary, content, tone)
-                // show_new_gen()
+                show_new_gen()
             })
 
             $("#length_dec_btn").click(function(){
@@ -119,7 +157,7 @@
                 let content = $("#content_input").val()
                 let tone = $("#tone_input").val()
                 decrease_length(headline, summary, content, tone)
-                // show_new_gen()
+                show_new_gen()
             })
 
             $("#tone_inc_btn").click(function(){
@@ -153,6 +191,10 @@
         function show_headline_editing(data){
             $("#edit_headline_div").show()
             $("#show_headline_div").hide()
+            $("#show_headline_div_two").hide()
+            $("#inputs_done_div").hide()
+            $("#keywords_to_select").hide()
+            $("#see_generations").hide()
 
             $("#headline_input").val(data["headline"])
             $("#summary_input").val(data["summary"])
@@ -163,16 +205,154 @@
         function show_headline(data){
             $("#edit_headline_div").hide()
             $("#show_headline_div").show()
+        }
 
-            $("#show_headline").text(data["headline"])
-            $("#show_summary").text(data["summary"])
-            $("#show_content").text(data["content"])
-            $("#show_tone").text(data["tone"])
-            $("#generated_email").text(data["generations"])
+        function show_headline_two(data){
+            $("#edit_headline_div").hide()
+            $("#show_headline_div_two").show()
+        }
+
+        function final_backer(){
+            $("#show_headline_div").show()
+            $("#inputs_done_div").hide()
+        }
+
+        function show_last_page(){
+            $("#show_headline_div").hide()
+            $("#show_headline_div_two").hide()
+            $("#inputs_done_div").show()
         }
 
         function show_new_gen(){
+            $("#keywords_to_select").show()
             $("#generated_email").text(headline_data["generations"])
+        }
+
+        function show_feedback(){
+            $("#see_generations").show()
+            $("#feedback_text").text(headline_data["feedback"])
+        }
+
+        function give_feedback() {
+            let data = {"headline": headline}
+            $.ajax({
+                type: "POST",
+                url: "/give_feedback",                
+                dataType : "json",
+                contentType: "application/json; charset=utf-8",
+                
+                data : JSON.stringify(data),
+                beforeSend: function () { 
+                    $("#spinner-div").show()
+                },
+                success: function(data, text){
+                    // console.log("submit_headline response")
+                    // console.log(data)                
+                    headline_data = data
+                    show_feedback(data)
+                },
+                error: function(request, status, error){
+                    console.log("Error");
+                    console.log(request)
+                    console.log(status)
+                    console.log(error)
+                },
+                complete: function () { 
+                    $("#spinner-div").hide()
+                },
+            });
+        }
+
+        function first_submission(headline) {
+            let data = {"headline": headline, "summary": "", "content": "", "tone": ""}
+            $.ajax({
+                type: "POST",
+                url: "/first_submission",                
+                dataType : "json",
+                contentType: "application/json; charset=utf-8",
+                
+                data : JSON.stringify(data),
+                beforeSend: function () { 
+                    $("#spinner-div").show()
+                },
+                success: function(data, text){
+                    // console.log("submit_headline response")
+                    // console.log(data)                
+                    headline_data = data
+                    show_headline(data)
+                },
+                error: function(request, status, error){
+                    console.log("Error");
+                    console.log(request)
+                    console.log(status)
+                    console.log(error)
+                },
+                complete: function () { 
+                    $("#spinner-div").hide()
+                },
+            });
+        }
+
+        function first_submission_two(headline) {
+            let data = {"headline": headline, "summary": "", "content": "", "tone": ""}
+            $.ajax({
+                type: "POST",
+                url: "/first_submission",                
+                dataType : "json",
+                contentType: "application/json; charset=utf-8",
+                
+                data : JSON.stringify(data),
+                beforeSend: function () { 
+                    $("#spinner-div").show()
+                },
+                success: function(data, text){
+                    // console.log("submit_headline response")
+                    // console.log(data)                
+                    headline_data = data
+                    show_headline_two(data)
+                },
+                error: function(request, status, error){
+                    console.log("Error");
+                    console.log(request)
+                    console.log(status)
+                    console.log(error)
+                },
+                complete: function () { 
+                    $("#spinner-div").hide()
+                },
+            });
+        }
+
+
+        function second_submission(new_, last, lastlast) {
+            let data = {"last": last, "new": new_, "lastlast": lastlast}
+            $.ajax({
+                type: "POST",
+                url: "/second_submission",                
+                dataType : "json",
+                contentType: "application/json; charset=utf-8",
+                
+                data : JSON.stringify(data),
+                beforeSend: function () { 
+                    $("#spinner-div").show()
+                },
+                success: function(data, text){
+                    // console.log("submit_headline response")
+                    // console.log(data)                
+                    headline_data = data
+                    show_last_page()
+                    show_new_gen()
+                },
+                error: function(request, status, error){
+                    console.log("Error");
+                    console.log(request)
+                    console.log(status)
+                    console.log(error)
+                },
+                complete: function () { 
+                    $("#spinner-div").hide()
+                },
+            });
         }
 
         function increase_formality(headline, summary, content, tone){
@@ -663,41 +843,86 @@
         }
     </script>  
 
+<body style="background-color:	#e8eef9">
+
     <div class="row">
 
         <div id="explore_text" class="col-md-4" >
-            <b>Input Information</b>
-            <div id="edit_headline_div">                
-                    Broad Context<br>
-                    <textarea id="headline_input" placeholder="Please provide the broad context for your email, written in the first person. Ex. I am writing a cold-email or I am making a first impression" rows="4" cols="40"></textarea>
+            <div id="edit_headline_div">                 
+                    
                     <br>
-                    Name and Relationship to Recipient<br>
-                    <textarea id="summary_input" placeholder="Ex. Grace, a recruiter at an investment bank" rows="2" cols="40"></textarea>
+                    <b>Let's get started! Who are you writing an email to?</b><br><br>
+                    <textarea id="headline_input" placeholder="Ex. Professor Lydia Chilton" rows="1" cols="40"></textarea>
+                    <br><br>
+
+                    <!--
+                    Do you know the recipient?
+                    <select name="connection" id="connection">
+                        <option value="Yes">Yes, I know the recipient personally.</option>
+                        <option value="Connected">No, but I have a mutual connection with the recipient.</option>
+                        <option value="No">No, I am writing a cold-email.</option>
+                      </select><br><br>
+                    -->
+                    <b>And do you know them?</b> <br>
+                    Select one of the choices below to continue.
+
+                    <br><br>
+
+                    <button id="first_submission" type="button" style="background: darkcyan;color:white;">Yes, I know this professor personally!</button> <br> <br>
+                    <button id="first_submission_two" type="button" style="background: darkcyan;color:white;">No, I am writing a cold-email.</button> 
+
                     <br>
-                    Message Content<br>
-                    <textarea id="content_input" placeholder="Please provide as much context for the system as possible. Ex. I am inquiring about summer internship opportunities for college underclassmen with programming experience " rows="5" cols="40"></textarea>
                     <br>
-                    Type of Tone<br>
-                    <textarea id="tone_input" placeholder="Ex. respectful but casual, apologetic" rows="4" cols="40"></textarea>
-                    <br>
-                    <button id="submit_headline_btn" type="button">Generate Email</button>                
+
             </div>
+
             <div id="show_headline_div">
-                    <text>Broad Context</text>
-                    <div id="show_headline" ></div>
-                    <text>Relationship to Recipient</text>
-                    <div id="show_summary" ></div>
-                    <text>Message Content</text>
-                    <div id="show_content" ></div>
-                    <text>Type of Tone</text>
-                    <div id="show_tone" ></div>
-                    <button id="edit_headline_btn" type="button">Edit</button>
+                <br><b>How do you know the recipient?</b><textarea id="new_input" placeholder="Ex. I am in her class and do research with her." rows="1" cols="40"></textarea>
+                <br><b>What is your specific ask?</b><textarea id="last_input" placeholder="Ex. I need an extension on Homework #12, due on Monday, December 4th." rows="2" cols="40"></textarea>
+                <br><b>Why do you need what you are asking for?</b><textarea id="lastlast_input" placeholder="Ex. I fell into a food coma after Thanksgiving and haven't been able to work on the assignment!" rows="2" cols="40"></textarea>
+                <br><br><button id="edit_headline_btn" type="button" style="background: darkcyan;color:white;">Back</button><text>          </text><text>          </text><button id="second_submission" type="button" style="background: darkcyan;color:white;">Generate Email</button>
+            </div>
+
+            <div id="show_headline_div_two">
+                <br><b>Write a one sentence introduction about yourself.</b><textarea id="new_input" placeholder="Please include your name, major, and university at least. Ex. My name is Karthik Sreedhar and I am a computer science and journalism master's student at Columbia University" rows="5" cols="40"></textarea>
+                <br><b>Why are you reaching out to this person?</b><textarea id="content_input" placeholder="Please explain the specific reason you are choosing to reach out to this person. Ex. I am interested in doing research with this professor because we have a shared interest in HCI" rows="5" cols="40"></textarea>
+                <br><b>What relevant prior experience do you have?</b><textarea id="tone_input" placeholder="Please input your experience in resume format: Role @ Company with bullet points below" rows="3" cols="40"></textarea>
+                <br><b>Can you provide a link about the recipient?</b><textarea id="subject_input" placeholder="Please provide your link here" rows="2" cols="40"></textarea>
+                <br><b>What is your specific ask?</b><textarea id="last_input" placeholder="Please be as specific as possible. Ex. I want to schedule a brief conversation in the next week" rows="3" cols="40"></textarea>
+                <br><br><button id="edit_headline_btn_two" type="button">Back</button><text>          </text><text>          </text><button id="second_submission_two" type="button">Generate Email</button>
+            </div>
+
+
+            <div id="inputs_done_div">
+                <br>
+                <b>Your email has been generated to the right!</b>
+                <br><br><button id="back_headline_btn" type="button" style="background: darkcyan;color:white;">Edit your inputs</button>
             </div>
         </div>
 
         <div id="keywords_to_select" class="col-md-4">
+            <br>
             <b>Generated Email</b>
-            <div id="generated_email"></div>
+            <br><br>
+            <div id="generated_email" style="background-color: white"></div>
+
+            <br>
+
+            <b>Editing</b><br>
+            <textarea id="adjust_input" placeholder="Ex. Please make the email longer." rows="1" cols="55"></textarea>
+            <button id="edits" type="button" style="background: darkcyan;color:white;">Enter</button>
+
+            <br><br>
+
+            <button id="Feedback" type="button" style="background: darkcyan;color:white;">Accept & Continue!</button>
+            
+
+            <!--
+            <div>
+                <button id="undo_btn" type="button">Return to Previous Version</button>
+                <button id="rewrite_btn" type="button">Regenerate</button>
+            </div>
+        -->
         </div>    
 
         <!--
@@ -707,19 +932,13 @@
                 
             </div>
         -->
+
+        <!--
         <div id="see_generations" class="col-md-4">
             <b>Sliders</b>
             <div>Formality
                 <button id="formality_inc_btn" type="button">Increase</button>
                 <button id="formality_dec_btn" type="button">Decrease</button>
-            </div>
-            <div>Directness
-                <button id="directness_inc_btn" type="button">Increase</button>
-                <button id="directness_dec_btn" type="button">Decrease</button>
-            </div>
-            <div>Tone Emphasis
-                <button id="tone_inc_btn" type="button">Increase</button>
-                <button id="tone_dec_btn" type="button">Decrease</button>
             </div>
             <div>Length
                 <button id="length_inc_btn" type="button">Increase</button>
@@ -731,9 +950,17 @@
                 <button id="rewrite_btn" type="button">Regenerate</button>
             </div>
         </div>
+    -->
+
+    <div id="see_generations" class="col-md-4">
+        <br>
+        <b>Email Feedback</b>
+        <br><br>
+        <div id="feedback_text" style="background-color: white"></div></div>
         
     </div>
 
+</body>
 
 {% endblock %}
 
