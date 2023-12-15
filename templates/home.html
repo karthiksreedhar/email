@@ -3,241 +3,106 @@
 {% block content %}
 
     <script>
-        /*
-            INIT
-        */
         var headline_data = {{data|tojson}} 
 
-
-        // to pretty print headline_data as string to copy and paste for saving
         function print_headline_data(){
             console.log(JSON.stringify(headline_data, null, 3));
         }
-        
 
         $(function() {
-            load_headline_data()
-
+            show_headline_editing(headline_data)
         });
-
-        function load_headline_data(){
-            //load headline and summary
-            headline = $.trim(headline_data["headline"])
-            if(headline != ""){
-                show_headline(headline_data)
-            }else{
-                show_headline_editing(headline_data)
-            }
-
-            // load keywords
-            keywords = headline_data["keywords"]
-            if(keywords.length > 0){
-                show_keywords(headline_data)
-            }
-
-             //load images
-            generations_list = headline_data["generations"]
-            if(generations_list.length > 0){
-                show_generations(generations_list, true)
-            }             
-        }
 
         /*
             HEADLINES
         */
 
-        $(function() {
-            $("#submit_headline_btn").click(function(){
-                let headline = $("#headline_input").val()
-                let summary = $("#summary_input").val()
-                let content = $("#content_input").val()
-                let tone = $("#tone_input").val()
-                submit_headline(headline, summary, content, tone)
-            })
+        function final_backer_known() {
+            $("#recipient-known").show()
+            $("#email-display").hide()
+        }
 
-            $("#edit_headline_btn").click(function(){
-                show_headline_editing(headline_data)
-            })
+        function final_backer_unknown() {
+            $("#recipient-unknown").show()
+            $("#email-display").hide()
+        }
 
-            $("#edit_headline_btn_two").click(function(){
-                show_headline_editing(headline_data)
-            })
+        function adjust_button() {
+          var change = $("#adjustments").val()
 
-            $("#rewrite_btn").click(function(){
-                let headline = $("#headline_input").val()
-                let summary = $("#summary_input").val()
-                let content = $("#content_input").val()
-                let tone = $("#tone_input").val()
-                submit_headline(headline, summary, content, tone)
-            })
-        });
+          make_adjustments(change)
 
-        $(function() {
-            $("#first_submission").click(function(){
-                let headline = $("#headline_input").val();
-
-                first_submission(headline)
-            })
-
-            $("#first_submission_two").click(function(){
-                let headline = $("#headline_input").val();
-
-                first_submission_two(headline)
-            })
-
-            $("#second_submission").click(function(){
-                let new_ = $("#new_input").val();
-                let last = $("#last_input").val();
-                let lastlast = $("#lastlast_input").val();
-
-                second_submission(new_, last, lastlast)
-                
-            })
-
-            $("#back_headline_btn").click(function(){
-                final_backer()
-            })
-        });
-
-        $(function() {
-            $("#Feedback").click(function(){
-                give_feedback()
-            })
-        });
-
-        $(function() {
-            $("#formality_inc_btn").click(function(){
-                let headline = $("#headline_input").val()
-                let summary = $("#summary_input").val()
-                let content = $("#content_input").val()
-                let tone = $("#tone_input").val()
-                increase_formality(headline, summary, content, tone)
-                show_new_gen()
-            })
-            
-            $("#formality_dec_btn").click(function(){
-                let headline = $("#headline_input").val()
-                let summary = $("#summary_input").val()
-                let content = $("#content_input").val()
-                let tone = $("#tone_input").val()
-                decrease_formality(headline, summary, content, tone)
-                show_new_gen()
-            })
-
-            $("#directness_inc_btn").click(function(){
-                let headline = $("#headline_input").val()
-                let summary = $("#summary_input").val()
-                let content = $("#content_input").val()
-                let tone = $("#tone_input").val()
-                increase_directness(headline, summary, content, tone)
-                // show_new_gen()
-            })
-
-            $("#directness_dec_btn").click(function(){
-                let headline = $("#headline_input").val()
-                let summary = $("#summary_input").val()
-                let content = $("#content_input").val()
-                let tone = $("#tone_input").val()
-                decrease_directness(headline, summary, content, tone)
-                // show_new_gen()
-            })
-
-            $("#length_inc_btn").click(function(){
-                let headline = $("#headline_input").val()
-                let summary = $("#summary_input").val()
-                let content = $("#content_input").val()
-                let tone = $("#tone_input").val()
-                increase_length(headline, summary, content, tone)
-                show_new_gen()
-            })
-
-            $("#length_dec_btn").click(function(){
-                let headline = $("#headline_input").val()
-                let summary = $("#summary_input").val()
-                let content = $("#content_input").val()
-                let tone = $("#tone_input").val()
-                decrease_length(headline, summary, content, tone)
-                show_new_gen()
-            })
-
-            $("#tone_inc_btn").click(function(){
-                let headline = $("#headline_input").val()
-                let summary = $("#summary_input").val()
-                let content = $("#content_input").val()
-                let tone = $("#tone_input").val()
-                increase_tone(headline, summary, content, tone)
-            })
-
-            $("#tone_dec_btn").click(function(){
-                let headline = $("#headline_input").val()
-                let summary = $("#summary_input").val()
-                let content = $("#content_input").val()
-                let tone = $("#tone_input").val()
-                decrease_tone(headline, summary, content, tone)
-                // show_new_gen()
-            })
-
-            $("#undo_btn").click(function(){
-                let headline = $("#headline_input").val()
-                let summary = $("#summary_input").val()
-                let content = $("#content_input").val()
-                let tone = $("#tone_input").val()
-                undo_sauce(headline, summary, content, tone)
-                // show_new_gen()
-            })
-
-        });
+          $("#content").text(data["generations"])
+        }
 
         function show_headline_editing(data){
-            $("#edit_headline_div").show()
-            $("#show_headline_div").hide()
-            $("#show_headline_div_two").hide()
-            $("#inputs_done_div").hide()
-            $("#keywords_to_select").hide()
-            $("#see_generations").hide()
-
-            $("#headline_input").val(data["headline"])
-            $("#summary_input").val(data["summary"])
-            $("#content_input").val(data["content"])
-            $("#tone_input").val(data["tone"])
+            $("#welcome-page").show()
+            $("#page-two").hide()
+            $("#recipient-known").hide()
+            $("#recipient-unknown").hide()
+            $("#email-display").hide()
         }
 
-        function show_headline(data){
-            $("#edit_headline_div").hide()
-            $("#show_headline_div").show()
+        function page_three_gen() {
+            var name = $("#name-input").val()
+            var rec = $("#rec-name-input").val()
+            var dropdown = document.getElementById("known");
+            var known = dropdown.value;
+
+            if (known === "yes") {
+                $("#page-two").hide()
+                $("#recipient-known").show()
+            } else if (known === "no") {
+                $("#page-two").hide()
+                $("#recipient-unknown").show()
+            } else {
+                // Handle the case when the user hasn't selected any option
+                alert("Please select an option from the dropdown");
+            }
+
+            save_first_submission_info(name, rec, known)
+
         }
 
-        function show_headline_two(data){
-            $("#edit_headline_div").hide()
-            $("#show_headline_div_two").show()
+        function back_from_final() {
+            $("#recipient-known").show()
+            $("#email-display").hide()
         }
 
-        function final_backer(){
-            $("#show_headline_div").show()
-            $("#inputs_done_div").hide()
+        function show_name_input() {
+            $("#welcome-page").hide()
+            $("#page-two").show()
+            $("#recipient-known").hide()
+            $("#recipient-unknown").hide()
+            $("#email-display").hide()
         }
 
-        function show_last_page(){
-            $("#show_headline_div").hide()
-            $("#show_headline_div_two").hide()
-            $("#inputs_done_div").show()
+        function known_email_writer() {
+            var dropdown = document.getElementById("reach-out-reason");
+            var request_ = dropdown.value;
+            var reason = $("#request-reason").val()
+            var relationship = $("#relationship-info").val()
+
+            write_known_email(request_, reason, relationship)
         }
 
-        function show_new_gen(){
-            $("#keywords_to_select").show()
-            $("#generated_email").text(headline_data["generations"])
+        function unknown_email_writer() {
+            var you = $("#your-info").val()
+            var reason = $("#request-reason").val()
+            var recu = $("#rec-exp").val()
+            var dropdownT = document.getElementById("specific-ask");
+            var ask = dropdownT.value;
+            var resume = $("#your-exp").val()
+            var relationship = $("#relationship-u").val()
+
+            write_unknown_email(you, reason, recu, ask, resume, relationship)
         }
 
-        function show_feedback(){
-            $("#see_generations").show()
-            $("#feedback_text").text(headline_data["feedback"])
-        }
-
-        function give_feedback() {
-            let data = {"headline": headline}
+        function write_unknown_email(you, reason, recu, ask, resume, relationship) {
+            let data = {"you": you, "reason": reason, "recu": recu, "ask": ask, "resume": resume, "relationship": relationship}
             $.ajax({
                 type: "POST",
-                url: "/give_feedback",                
+                url: "/write_unknown_email",                
                 dataType : "json",
                 contentType: "application/json; charset=utf-8",
                 
@@ -249,7 +114,12 @@
                     // console.log("submit_headline response")
                     // console.log(data)                
                     headline_data = data
-                    show_feedback(data)
+                    // show_headline(data)
+                    $("#recipient-unknown").hide()
+                    $("#email-display").show()
+                    $("#content").text(headline_data["generations"])
+                    $("#subject").text(headline_data["subject"])
+                    $("#explanation").text(headline_data["explanation"])
                 },
                 error: function(request, status, error){
                     console.log("Error");
@@ -263,103 +133,11 @@
             });
         }
 
-        function first_submission(headline) {
-            let data = {"headline": headline, "summary": "", "content": "", "tone": ""}
-            $.ajax({
+        function save_first_submission_info(name, rec, known) {
+          let data = {"name": name, "rec": rec, "known": known}
+          $.ajax({
                 type: "POST",
-                url: "/first_submission",                
-                dataType : "json",
-                contentType: "application/json; charset=utf-8",
-                
-                data : JSON.stringify(data),
-                beforeSend: function () { 
-                    $("#spinner-div").show()
-                },
-                success: function(data, text){
-                    // console.log("submit_headline response")
-                    // console.log(data)                
-                    headline_data = data
-                    show_headline(data)
-                },
-                error: function(request, status, error){
-                    console.log("Error");
-                    console.log(request)
-                    console.log(status)
-                    console.log(error)
-                },
-                complete: function () { 
-                    $("#spinner-div").hide()
-                },
-            });
-        }
-
-        function first_submission_two(headline) {
-            let data = {"headline": headline, "summary": "", "content": "", "tone": ""}
-            $.ajax({
-                type: "POST",
-                url: "/first_submission",                
-                dataType : "json",
-                contentType: "application/json; charset=utf-8",
-                
-                data : JSON.stringify(data),
-                beforeSend: function () { 
-                    $("#spinner-div").show()
-                },
-                success: function(data, text){
-                    // console.log("submit_headline response")
-                    // console.log(data)                
-                    headline_data = data
-                    show_headline_two(data)
-                },
-                error: function(request, status, error){
-                    console.log("Error");
-                    console.log(request)
-                    console.log(status)
-                    console.log(error)
-                },
-                complete: function () { 
-                    $("#spinner-div").hide()
-                },
-            });
-        }
-
-
-        function second_submission(new_, last, lastlast) {
-            let data = {"last": last, "new": new_, "lastlast": lastlast}
-            $.ajax({
-                type: "POST",
-                url: "/second_submission",                
-                dataType : "json",
-                contentType: "application/json; charset=utf-8",
-                
-                data : JSON.stringify(data),
-                beforeSend: function () { 
-                    $("#spinner-div").show()
-                },
-                success: function(data, text){
-                    // console.log("submit_headline response")
-                    // console.log(data)                
-                    headline_data = data
-                    show_last_page()
-                    show_new_gen()
-                },
-                error: function(request, status, error){
-                    console.log("Error");
-                    console.log(request)
-                    console.log(status)
-                    console.log(error)
-                },
-                complete: function () { 
-                    $("#spinner-div").hide()
-                },
-            });
-        }
-
-        function increase_formality(headline, summary, content, tone){
-            let data = {"headline":headline, "summary":summary, "content":content, "tone":tone}
-            $.ajax({
-                type: "POST",
-                url: "/increase_formality",                
+                url: "/save_first_submission_info",                
                 dataType : "json",
                 contentType: "application/json; charset=utf-8",
                 
@@ -382,14 +160,48 @@
                 complete: function () { 
                     $("#spinner-div").hide()
                 },
-            }); 
+            });
         }
 
-        function decrease_formality(headline, summary, content, tone){
-            let data = {"headline":headline, "summary":summary, "content":content, "tone":tone}
+        function make_adjustments(change) {
+          let data = {"change": change}
+          $.ajax({
+                type: "POST",
+                url: "/make_adjustments",                
+                dataType : "json",
+                contentType: "application/json; charset=utf-8",
+                
+                data : JSON.stringify(data),
+                beforeSend: function () { 
+                    $("#spinner-div").show()
+                },
+                success: function(data, text){
+                    // console.log("submit_headline response")
+                    // console.log(data)               
+                    headline_data = data
+                    $("#email-display").hide()
+                    $("#email-display").show()
+                    $("#content").text(headline_data["generations"])
+                    $("#subject").text(headline_data["subject"])
+                    $("#explanation").text(headline_data["explanation"])
+                },
+                error: function(request, status, error){
+                    console.log("Error");
+                    console.log(request)
+                    console.log(status)
+                    console.log(error)
+                },
+                complete: function () { 
+                    $("#spinner-div").hide()
+                },
+            });
+        }
+
+        function write_known_email(request_, reason, relationship) {
+            let data = {"request": request_, "reason": reason, "relationship": relationship}
             $.ajax({
                 type: "POST",
-                url: "/decrease_formality",                
+                url: "/write_known_email",                
                 dataType : "json",
                 contentType: "application/json; charset=utf-8",
                 
@@ -401,7 +213,12 @@
                     // console.log("submit_headline response")
                     // console.log(data)                
                     headline_data = data
-                    show_headline(data)
+                    // show_headline(data)
+                    $("#recipient-known").hide()
+                    $("#email-display").show()
+                    $("#content").text(headline_data["generations"])
+                    $("#subject").text(headline_data["subject"])
+                    $("#explanation").text(headline_data["explanation"])
                 },
                 error: function(request, status, error){
                     console.log("Error");
@@ -412,555 +229,658 @@
                 complete: function () { 
                     $("#spinner-div").hide()
                 },
-            }); 
-        }
-
-        function undo_sauce(headline, summary, content, tone){
-            let data = {"headline":headline, "summary":summary, "content":content, "tone":tone}
-            $.ajax({
-                type: "POST",
-                url: "/undo_sauce",                
-                dataType : "json",
-                contentType: "application/json; charset=utf-8",
-                
-                data : JSON.stringify(data),
-                beforeSend: function () { 
-                    $("#spinner-div").show()
-                },
-                success: function(data, text){
-                    // console.log("submit_headline response")
-                    // console.log(data)                
-                    headline_data = data
-                    show_headline(data)
-                },
-                error: function(request, status, error){
-                    console.log("Error");
-                    console.log(request)
-                    console.log(status)
-                    console.log(error)
-                },
-                complete: function () { 
-                    $("#spinner-div").hide()
-                },
-            }); 
-        }
-
-        function increase_directness(headline, summary, content, tone){
-            let data = {"headline":headline, "summary":summary, "content":content, "tone":tone}
-            $.ajax({
-                type: "POST",
-                url: "/increase_directness",                
-                dataType : "json",
-                contentType: "application/json; charset=utf-8",
-                
-                data : JSON.stringify(data),
-                beforeSend: function () { 
-                    $("#spinner-div").show()
-                },
-                success: function(data, text){
-                    // console.log("submit_headline response")
-                    // console.log(data)                
-                    headline_data = data
-                    show_headline(data)
-                },
-                error: function(request, status, error){
-                    console.log("Error");
-                    console.log(request)
-                    console.log(status)
-                    console.log(error)
-                },
-                complete: function () { 
-                    $("#spinner-div").hide()
-                },
-            }); 
-        }
-
-        function decrease_directness(headline, summary, content, tone){
-            let data = {"headline":headline, "summary":summary, "content":content, "tone":tone}
-            $.ajax({
-                type: "POST",
-                url: "/decrease_directness",                
-                dataType : "json",
-                contentType: "application/json; charset=utf-8",
-                
-                data : JSON.stringify(data),
-                beforeSend: function () { 
-                    $("#spinner-div").show()
-                },
-                success: function(data, text){
-                    // console.log("submit_headline response")
-                    // console.log(data)                
-                    headline_data = data
-                    show_headline(data)
-                },
-                error: function(request, status, error){
-                    console.log("Error");
-                    console.log(request)
-                    console.log(status)
-                    console.log(error)
-                },
-                complete: function () { 
-                    $("#spinner-div").hide()
-                },
-            }); 
-        }
-
-        function increase_tone(headline, summary, content, tone){
-            let data = {"headline":headline, "summary":summary, "content":content, "tone":tone}
-            $.ajax({
-                type: "POST",
-                url: "/increase_tone",                
-                dataType : "json",
-                contentType: "application/json; charset=utf-8",
-                
-                data : JSON.stringify(data),
-                beforeSend: function () { 
-                    $("#spinner-div").show()
-                },
-                success: function(data, text){
-                    // console.log("submit_headline response")
-                    // console.log(data)                
-                    headline_data = data
-                    show_headline(data)
-                },
-                error: function(request, status, error){
-                    console.log("Error");
-                    console.log(request)
-                    console.log(status)
-                    console.log(error)
-                },
-                complete: function () { 
-                    $("#spinner-div").hide()
-                },
-            }); 
-        }
-
-        function decrease_tone(headline, summary, content, tone){
-            let data = {"headline":headline, "summary":summary, "content":content, "tone":tone}
-            $.ajax({
-                type: "POST",
-                url: "/decrease_tone",                
-                dataType : "json",
-                contentType: "application/json; charset=utf-8",
-                
-                data : JSON.stringify(data),
-                beforeSend: function () { 
-                    $("#spinner-div").show()
-                },
-                success: function(data, text){
-                    // console.log("submit_headline response")
-                    // console.log(data)                
-                    headline_data = data
-                    show_headline(data)
-                },
-                error: function(request, status, error){
-                    console.log("Error");
-                    console.log(request)
-                    console.log(status)
-                    console.log(error)
-                },
-                complete: function () { 
-                    $("#spinner-div").hide()
-                },
-            }); 
-        }
-
-        function increase_length(headline, summary, content, tone){
-            let data = {"headline":headline, "summary":summary, "content":content, "tone":tone}
-            $.ajax({
-                type: "POST",
-                url: "/increase_length",                
-                dataType : "json",
-                contentType: "application/json; charset=utf-8",
-                
-                data : JSON.stringify(data),
-                beforeSend: function () { 
-                    $("#spinner-div").show()
-                },
-                success: function(data, text){
-                    // console.log("submit_headline response")
-                    // console.log(data)                
-                    headline_data = data
-                    show_headline(data)
-                },
-                error: function(request, status, error){
-                    console.log("Error");
-                    console.log(request)
-                    console.log(status)
-                    console.log(error)
-                },
-                complete: function () { 
-                    $("#spinner-div").hide()
-                },
-            }); 
-        }
-
-        function decrease_length(headline, summary, content, tone){
-            let data = {"headline":headline, "summary":summary, "content":content, "tone":tone}
-            $.ajax({
-                type: "POST",
-                url: "/decrease_length",                
-                dataType : "json",
-                contentType: "application/json; charset=utf-8",
-                
-                data : JSON.stringify(data),
-                beforeSend: function () { 
-                    $("#spinner-div").show()
-                },
-                success: function(data, text){
-                    // console.log("submit_headline response")
-                    // console.log(data)                
-                    headline_data = data
-                    show_headline(data)
-                },
-                error: function(request, status, error){
-                    console.log("Error");
-                    console.log(request)
-                    console.log(status)
-                    console.log(error)
-                },
-                complete: function () { 
-                    $("#spinner-div").hide()
-                },
-            }); 
-        }
-
-        function submit_headline(headline, summary, content, tone){
-            let data = {"headline":headline, "summary":summary, "content":content, "tone":tone}
-            $.ajax({
-                type: "POST",
-                url: "/submit_headline",                
-                dataType : "json",
-                contentType: "application/json; charset=utf-8",
-                
-                data : JSON.stringify(data),
-                beforeSend: function () { 
-                    $("#spinner-div").show()
-                },
-                success: function(data, text){
-                    // console.log("submit_headline response")
-                    // console.log(data)                
-                    headline_data = data
-                    show_headline(data)
-                },
-                error: function(request, status, error){
-                    console.log("Error");
-                    console.log(request)
-                    console.log(status)
-                    console.log(error)
-                },
-                complete: function () { 
-                    $("#spinner-div").hide()
-                },
-            }); 
-        }
-
-        function edit_headline(){
-            show_headline_editing(headline_data)
-        }
-
-        /*
-            KEYWORDS
-        */
-
-        $(function() {
-            $("#get_keywords").click(function(){                
-                get_keywords_gpt()
-            })
-        });
-
-
-        function show_keywords(data){
-            let keywords = data["keywords"]            
-            $("#display_keywords").empty()
-            $.each(keywords, function(i, item){
-                let new_keyword_div = $("<button class='keyword_div'>") 
-                $(new_keyword_div).text(item).click(function(x){
-                    console.log("item:"+item)
-                    data["item"] = item
-                    
-                    $.ajax({
-                        type: "POST",
-                        url: "/get_key",                
-                        dataType : "json",
-                        contentType: "application/json; charset=utf-8",
-                        
-                        data : JSON.stringify(data),
-                        beforeSend: function () { 
-                            $("#spinner-div").show()
-                        },
-                        success: function(data, text){
-                            console.log("get user selection")
-                            console.log(data)                
-                            headline_data = data
-                            // show_headline(data)
-                        },
-                        error: function(request, status, error){
-                            console.log("Error");
-                            console.log(request)
-                            console.log(status)
-                            console.log(error)
-                        },
-                        complete: function () { 
-                            $("#spinner-div").hide()
-                        },
-                    }); 
-
-
-                })
-                $("#display_keywords").append(new_keyword_div)
-            })
-        }
-
-        function get_keywords_gpt(){
-            // console.log(headline)
-            // console.log(summary)
-            let data = {}//{"headline":headline,"summary":summary}
-            $.ajax({
-                type: "POST",
-                url: "/get_keywords",                
-                dataType : "json",
-                contentType: "application/json; charset=utf-8",
-                data : JSON.stringify(data),
-                beforeSend: function () { 
-                    $("#spinner-div").show()
-                },
-                success: function(data, text){
-                    console.log("submit_headline response")
-                    console.log(data)
-                    headline_data = data
-
-                    show_keywords(headline_data)
-
-                },
-                error: function(request, status, error){
-                    console.log("Error");
-                    console.log(request)
-                    console.log(status)
-                    console.log(error)
-                },
-                complete: function () { 
-                    $("#spinner-div").hide()
-                },
-            }); 
-        }
-
-        /*
-            IMAGE GENERATIONS
-        */
-
-        $(function() {
-            $("#get_images_headline_btn").click(function(){
-                console.log("get_images_headline_btn")
-                let prompt = headline_data["headline"]
-                get_images(prompt)
-            })
-
-            
-        });
-
-        function get_images(prompt){
-
-            // alert(headline_data.keys)
-            // console.log(headline)
-            // console.log(summary)
-
-
-            let data = {"prompt":prompt}
-            $.ajax({
-                type: "POST",
-                url: "/get_images",                
-                dataType : "json",
-                contentType: "application/json; charset=utf-8",
-                data : JSON.stringify(data),
-                beforeSend: function () { 
-                    $("#spinner-div").show()
-                },
-                success: function(data, text){
-                    console.log("get_images response")
-                    console.log(data)  
-                    let prompt = data["prompt"]
-                    let url = data["url"]
-
-                    let new_generations_list = data
-                        // for i in new_images:
-                    $.each(new_generations_list, function(i, gen) {
-                        headline_data["generations"].push(gen) 
-                    })
-                    
-                    let hed = headline_data["generations"][0]
-                    alert("A song by " + headline_data["item"] + " about " + headline_data["summary"] + ".\n" + hed)
-                    // show_generations(headline_data(hed))
-
-                },
-                error: function(request, status, error){
-                    console.log("Error");
-                    console.log(request)
-                    console.log(status)
-                    console.log(error)
-                },
-                complete: function () { 
-                    $("#spinner-div").hide()
-                },
-            })
-            // alert("two")
-            // show_generations(headline_data["generations"][0])
-
-
+            });
         }
 
 
-        function show_generations(generations_list){  
-            alert(generations_list)       
-            // $("#div").empty()
-
-
-            // $.each(generations_list, function(i,item){
-            //     // console.log(item)
-            //     let id = item["id"]
-            //     let is_deleted = item["is_deleted"]
-                
-            //     if(is_deleted!="true"){
-            //         let prompt = item["prompt"]
-            //         let url = item["url"]
-            //         let song = data["generations"]
-
-            //         let new_gen_div = $("<div id='"+id+"'><div>"+prompt+song)
-
-            //         alert(new_gen_div)
-                
-            //         $("div").append(new_gen_div)
-            //     }
-            // }) 
-
-            // $("div").append(generations_list[0])
-
-
-            // alert(data["generations"])
-            // $("#show_generations_div").text(data["generations"][0])
-            // $("#show_summary").text(data["item"])
-
-        }
     </script>  
 
-<body style="background-color:	#e8eef9">
+<div id="welcome-page" >
 
-    <div class="row">
-
-        <div id="explore_text" class="col-md-4" >
-            <div id="edit_headline_div">                 
-                    
-                    <br>
-                    <b>Let's get started! Who are you writing an email to?</b><br><br>
-                    <textarea id="headline_input" placeholder="Ex. Professor Lydia Chilton" rows="1" cols="40"></textarea>
-                    <br><br>
-
-                    <!--
-                    Do you know the recipient?
-                    <select name="connection" id="connection">
-                        <option value="Yes">Yes, I know the recipient personally.</option>
-                        <option value="Connected">No, but I have a mutual connection with the recipient.</option>
-                        <option value="No">No, I am writing a cold-email.</option>
-                      </select><br><br>
-                    -->
-                    <b>And do you know them?</b> <br>
-                    Select one of the choices below to continue.
-
-                    <br><br>
-
-                    <button id="first_submission" type="button" style="background: darkcyan;color:white;">Yes, I know this professor personally!</button> <br> <br>
-                    <button id="first_submission_two" type="button" style="background: darkcyan;color:white;">No, I am writing a cold-email.</button> 
-
-                    <br>
-                    <br>
-
-            </div>
-
-            <div id="show_headline_div">
-                <br><b>How do you know the recipient?</b><textarea id="new_input" placeholder="Ex. I am in her class and do research with her." rows="1" cols="40"></textarea>
-                <br><b>What is your specific ask?</b><textarea id="last_input" placeholder="Ex. I need an extension on Homework #12, due on Monday, December 4th." rows="2" cols="40"></textarea>
-                <br><b>Why do you need what you are asking for?</b><textarea id="lastlast_input" placeholder="Ex. I fell into a food coma after Thanksgiving and haven't been able to work on the assignment!" rows="2" cols="40"></textarea>
-                <br><br><button id="edit_headline_btn" type="button" style="background: darkcyan;color:white;">Back</button><text>          </text><text>          </text><button id="second_submission" type="button" style="background: darkcyan;color:white;">Generate Email</button>
-            </div>
-
-            <div id="show_headline_div_two">
-                <br><b>Write a one sentence introduction about yourself.</b><textarea id="new_input" placeholder="Please include your name, major, and university at least. Ex. My name is Karthik Sreedhar and I am a computer science and journalism master's student at Columbia University" rows="5" cols="40"></textarea>
-                <br><b>Why are you reaching out to this person?</b><textarea id="content_input" placeholder="Please explain the specific reason you are choosing to reach out to this person. Ex. I am interested in doing research with this professor because we have a shared interest in HCI" rows="5" cols="40"></textarea>
-                <br><b>What relevant prior experience do you have?</b><textarea id="tone_input" placeholder="Please input your experience in resume format: Role @ Company with bullet points below" rows="3" cols="40"></textarea>
-                <br><b>Can you provide a link about the recipient?</b><textarea id="subject_input" placeholder="Please provide your link here" rows="2" cols="40"></textarea>
-                <br><b>What is your specific ask?</b><textarea id="last_input" placeholder="Please be as specific as possible. Ex. I want to schedule a brief conversation in the next week" rows="3" cols="40"></textarea>
-                <br><br><button id="edit_headline_btn_two" type="button">Back</button><text>          </text><text>          </text><button id="second_submission_two" type="button">Generate Email</button>
-            </div>
-
-
-            <div id="inputs_done_div">
-                <br>
-                <b>Your email has been generated to the right!</b>
-                <br><br><button id="back_headline_btn" type="button" style="background: darkcyan;color:white;">Edit your inputs</button>
-            </div>
-        </div>
-
-        <div id="keywords_to_select" class="col-md-4">
-            <br>
-            <b>Generated Email</b>
-            <br><br>
-            <div id="generated_email" style="background-color: white"></div>
-
-            <br>
-
-            <b>Editing</b><br>
-            <textarea id="adjust_input" placeholder="Ex. Please make the email longer." rows="1" cols="55"></textarea>
-            <button id="edits" type="button" style="background: darkcyan;color:white;">Enter</button>
-
-            <br><br>
-
-            <button id="Feedback" type="button" style="background: darkcyan;color:white;">Accept & Continue!</button>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Welcome to Email Elves</title>
+        <style>
+            #home-body {
+                background-color: #f2f2f2;
+                display: flex;              /* Set the body as a flex container */
+                justify-content: center;    /* Center items horizontally */
+                align-items: center;        /* Center items vertically */
+                height: 100vh;              /* Make the container full viewport height */
+            }
             
+            .container {
+                max-width: 400px;
+                margin: 0 auto;
+                text-align: center;
+                padding: 50px;
+            }
+            
+            h1 {
+                color: #333;
+                font-size: 28px;
+                margin-bottom: 10px;
+            }
+            
+            h2 {
+                color: #666;
+                font-size: 18px;
+                margin-bottom: 20px;
+            }
+            
+            .continue-btn-one {
+                background-color: #d1d4d1;
+                color: rgb(3, 0, 0);
+                border: none;
+                padding: 10px 20px;
+                font-size: 16px;
+                cursor: pointer;
+                border-radius: 4px;
+            }
 
-            <!--
-            <div>
-                <button id="undo_btn" type="button">Return to Previous Version</button>
-                <button id="rewrite_btn" type="button">Regenerate</button>
-            </div>
-        -->
-        </div>    
-
-        <!--
-        <div id="see_generations" class="col-md-4">
-            See Images <button id="get_images_headline_btn" type="button">Get images for headline</button>
-            <div class="row" id="gallery">
-                
-            </div>
-        -->
-
-        <!--
-        <div id="see_generations" class="col-md-4">
-            <b>Sliders</b>
-            <div>Formality
-                <button id="formality_inc_btn" type="button">Increase</button>
-                <button id="formality_dec_btn" type="button">Decrease</button>
-            </div>
-            <div>Length
-                <button id="length_inc_btn" type="button">Increase</button>
-                <button id="length_dec_btn" type="button">Decrease</button>
-            </div>
-            <br>
-            <div>
-                <button id="undo_btn" type="button">Return to Previous Version</button>
-                <button id="rewrite_btn" type="button">Regenerate</button>
-            </div>
+            .continue-btn-one:hover {
+                background-color: #45a049;
+                color: white;
+            }
+        </style>
+    </head>
+    <body id="home-body">
+        <div class="container">
+            <img style="width:80px;height:80px;" src="https://cdn-icons-png.flaticon.com/512/1781/1781562.png"></img>
+            <br><br>
+            <h1>Welcome to Email Elves</h1>
+            <h2>Your own personal email assistant</h2>
+            <button class="continue-btn-one" onclick="show_name_input()" type="button">Continue</button>
         </div>
-    -->
+    </body>
+    
+</div >
 
-    <div id="see_generations" class="col-md-4">
-        <br>
-        <b>Email Feedback</b>
-        <br><br>
-        <div id="feedback_text" style="background-color: white"></div></div>
-        
+<div id="page-two">
+
+<head>
+<title>User Name Input</title>
+  <style>
+    #page-two-body {
+      display: flex;
+      justify-content: center; /* Aligns content horizontally */
+      align-items: center; /* Aligns content vertically */
+      height: 100vh; /* Sets height to full viewport height */
+      font-family: Arial, sans-serif; /* Example font for consistency */
+    }
+
+    .container {
+      text-align: center;
+    }
+
+    .input-question {
+      font-size: 18px;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+
+    .input-field {
+      padding: 5px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      margin-bottom: 10px;
+      justify-content: center;
+    }
+
+    .input-field:placeholder {
+        justify-content: ceneter;
+    }
+
+    .dropdown {
+      padding: 5px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      width: 200px;
+      margin-bottom: 10px;
+    }
+
+    .button-container {
+      margin-top: 10px;
+      display: flex;
+      justify-content:space-evenly;
+      align-items: center;
+    }
+
+    .back-btn-one, .continue-btn-two {
+      margin-top: 10px;
+      padding: 8px 12px;
+      background-color: #d1d4d1;
+      color: rgb(3, 0, 0);
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .back-btn-one:hover, .continue-btn-two:hover {
+        background-color: #45a049;
+        color: white;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h2 class="input-question">What's your name?</h2>
+    <input id="name-input" type="text" class="input-field" placeholder="Your name">
+    <h2 class="input-question">Who are you emailing?</h2>
+    <input id="rec-name-input" type="text" class="input-field" placeholder="Recipient's name">
+    <h2 class="input-question">Do you know the recipient?</h2>
+    <select id="known" class="dropdown">
+      <option value="" disabled selected>Select an option</option>
+      <option value="yes">I know the recipient</option>
+      <option value="no">I do not know the recipient</option>
+    </select>
+    <br>
+    <div class="button-container">
+        <button class="back-btn-one" type="button" onclick="show_headline_editing()">Back</button>
+        <button class="continue-btn-two" type="button" onclick="page_three_gen()">Continue</button>
     </div>
-
+  </div>
 </body>
+
+</div>
+
+<div id="recipient-known">
+
+    <head>
+        <title>Request Form</title>
+        <style>
+          body {
+            background-color: #f2f2f2;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+          }
+      
+          .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+          }
+      
+          h2 {
+            font-size: 22px;
+            margin-bottom: 20px;
+          }
+      
+          .other-reason, .question {
+            font-size: 18px;
+            margin-bottom: 10px;
+            font-weight: bold;
+          }
+      
+          .dropdown {
+            padding: 5px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 100%;
+            margin-bottom: 10px;
+          }
+      
+          .input-field {
+            padding: 5px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 100%;
+            margin-bottom: 10px;
+    }
+
+    .input-field::placeholder {
+      color: #999;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .button-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .back-btn-two,
+    .continue-btn-three {
+      padding: 8px 12px;
+      background-color: #d1d4d1;
+      color: rgb(3, 0, 0);
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .back-btn-two:hover,
+    .continue-btn-three:hover {
+      background-color: #45a049;
+      color: white;
+    }
+  </style>
+
+    </head>
+
+    <body>
+    <div class="container">
+
+        <div class="question">
+        <label for="reach-out-reason">Why are you reaching out?</label>
+        <select id="reach-out-reason" class="dropdown" onchange="handleReasonChange()">      
+            <option value="" disabled selected>Select an option</option>
+            <option value="extension">I am requesting an extension</option>
+            <option value="absence">I am notifying them of an absence</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+    
+        <div id="other-reason" class="hidden">
+          <label for="other-reason-input">Please specify:</label>
+          <input type="text" id="other-reason-input" class="input-field" placeholder="Specify reason">
+        </div>
+    
+        <div class="question">
+          <label for="request-reason">What is the reason for your request?</label>
+          <input id="request-reason" class="input-field" placeholder="Enter the reason. Ex. I have three midterms this week">
+        </div>
+    
+        <div class="question">
+          <label for="relationship-info">Additional Information</label>
+          <textarea id="relationship-info" class="input-field" placeholder="If asking for an extension: assignment name, original due date, and proposed alternate due date. If notifying of an absence: name of class and date of absence. If other: any additional information necessary."></textarea>
+        </div>
+    
+        <div class="button-container">
+          <button class="back-btn-two" onclick="show_name_input()">Back</button>
+          <button class="continue-btn-three" onclick="known_email_writer()">Generate Email</button>
+        </div>
+      </div>
+    
+      <script>
+        function handleReasonChange() {
+          var dropdown = document.getElementById("reach-out-reason");
+          var otherReasonInput = document.getElementById("other-reason-input");
+          var otherReasonDiv = document.getElementById("other-reason");
+    
+          if (dropdown.value === "other") {
+            otherReasonDiv.classList.remove("hidden");
+            otherReasonInput.required = true;
+          } else {
+            otherReasonDiv.classList.add("hidden");
+            otherReasonInput.required = false;
+            otherReasonInput.value = "";
+          }
+        }
+      </script>
+    </body>
+</div>
+
+<div id="recipient-unknown">
+
+    <head>
+        <title>Request Form</title>
+        <style>
+          body {
+            background-color: #f2f2f2;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+          }
+      
+          .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+          }
+      
+          h2 {
+            font-size: 22px;
+            margin-bottom: 20px;
+          }
+      
+          .other-reason, .question {
+            font-size: 18px;
+            margin-bottom: 10px;
+            font-weight: bold;
+          }
+      
+          .dropdown {
+            padding: 5px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 100%;
+            margin-bottom: 10px;
+          }
+      
+          .input-field {
+            padding: 5px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 100%;
+            margin-bottom: 10px;
+    }
+
+    .input-field::placeholder {
+      color: #999;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .button-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .back-btn-three,
+    .continue-btn-four {
+      padding: 8px 12px;
+      background-color: #d1d4d1;
+      color: rgb(3, 0, 0);
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .back-btn-three:hover,
+    .continue-btn-four:hover {
+      background-color: #45a049;
+      color: white;
+    }
+  </style>
+
+    </head>
+
+    <body>
+    <div class="container">
+
+      <div class="question">
+        <label for="your-exp">Upload your resume</label>
+        <br>
+        <input id="your-exp" type="file">
+      </div>
+      </div>
+
+      <br>
+      <div class = "container">
+
+        <div class="question">
+            <label for="your-info">Your Degree, Major, and University</label>
+            <input id="your-info" class="input-field" placeholder="Ex. M.S., Computer Science and Journalism, Columbia University">
+          </div>
+
+        <div class="question">
+            <label for="request-reason">Why are you reaching out?</label>
+            <input id="request-reason" class="input-field" placeholder="Ex. I'm interested in the way your research studies ways in which computer science can assist with design">
+          </div>
+
+          <div class="question">
+            <label for="rec-exp">At what university does the recipient teach?</label>
+            <input id="rec-exp" class="input-field" placeholder="Ex. Columbia University">
+          </div>
+
+          <div class="question">
+            <label for="specific-ask">What is your specific ask?</label>
+            <select id="specific-ask" class="dropdown" onchange="handleReasonChange()">      
+                <option value="" disabled selected>Select an option</option>
+                <option value="coffeechat">I would like to schedule a coffee chat</option>
+                <option value="resources">I want to be pointed in the direction of further resources</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+        
+            <div id="other-reason-two" class="hidden">
+              <label for="other-reason-input-two">Please specify:</label>
+              <input type="text" id="other-reason-input-two" class="input-field" placeholder="Specify reason">
+            </div>
+
+            <div class="question">
+              <label for="relationship-u">Additional Information</label>
+              <textarea id="relationship-u" class="input-field" placeholder="If asking for a coffee chat: suggest a date. If asking for more resources: specify your areas of interst and prior background. If other: any additional information necessary."></textarea>
+            </div>
+
+            <div class="button-container">
+                <button class="back-btn-three" onclick="show_name_input()">Back</button>
+                <button class="continue-btn-four" onclick="unknown_email_writer()">Generate Email</button>
+              </div>
+
+
+              <script>
+                function handleReasonChange() {
+                  var dropdown = document.getElementById("specific-ask");
+                  var otherReasonInput = document.getElementById("other-reason-input-two");
+                  var otherReasonDiv = document.getElementById("other-reason-two");
+            
+                  if (dropdown.value === "other") {
+                    otherReasonDiv.classList.remove("hidden");
+                    otherReasonInput.required = true;
+                  } else {
+                    otherReasonDiv.classList.add("hidden");
+                    otherReasonInput.required = false;
+                    otherReasonInput.value = "";
+                  }
+                }
+              </script>
+          
+
+
+
+              </div>
+
+
+    </body>
+
+</div>
+
+<div id="email-display">
+
+    <head>
+        <title>Compose Email</title>
+        <style>
+            .email-container {
+                width: 500px;
+                margin: auto;
+                padding: 20px;
+                background: #F8F8F8;
+                border: 1px solid #CCC;
+                border-radius: 5px;
+                background-color: #fff;
+                font-family: Arial, sans-serif;
+                text-align: left;
+            }
+
+            .email-container textarea {
+                width: 100%;
+                padding: 10px;
+                margin-bottom: 15px;
+                border: 1px solid #CCC;
+                border-radius: 4px;
+                resize: vertical;
+                background-color: #fff;
+                text-align: left;
+            }
+
+            .subject-container {
+                width: 500px;
+                margin: auto;
+                padding: 20px;
+                background: #F8F8F8;
+                border: 1px solid #CCC;
+                background-color: #fff;
+                border-radius: 5px;
+                font-family: Arial, sans-serif;
+                text-align: left;
+            }
+
+            .subject-container textarea {
+                width: 100%;
+                padding: 10px;
+                margin-bottom: 15px;
+                border: 1px solid #CCC;
+                border-radius: 4px;
+                background-color: #fff;
+                resize: vertical;
+                text-align: left;
+            }
+
+            .feedback-container {
+                width: 500px;
+                margin: auto;
+                padding: 20px;
+                border: 1px solid green;
+                background-color: #fff;
+                border-radius: 5px;
+                font-family: Arial, sans-serif;
+                text-align: left;
+            }
+
+            .feedback-container textarea {
+                width: 100%;
+                padding: 10px;
+                margin-bottom: 15px;
+                background-color: #fff;
+                border: 1px solid #CCC;
+                border-radius: 4px;
+                resize: vertical;
+                text-align: left;
+            }
+
+            .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+          }
+      
+          h2 {
+            font-size: 22px;
+            margin-bottom: 20px;
+          }
+      
+          .other-reason, .question {
+            font-size: 18px;
+            margin-bottom: 10px;
+            font-weight: bold;
+          }
+      
+          .dropdown {
+            padding: 5px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 100%;
+            margin-bottom: 10px;
+          }
+      
+          .input-field {
+            padding: 5px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 100%;
+            margin-bottom: 10px;
+    }
+
+    .input-field::placeholder {
+      color: #999;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .button-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      text-align: center;
+    }
+
+    .back-btn-five,
+    .back-btn-six,
+    .adjust-btn,
+    .version-btn {
+      padding: 8px 12px;
+      background-color: #d1d4d1;
+      color: rgb(3, 0, 0);
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+  .centered-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 100%;
+  }
+
+    .back-btn-five:hover,
+    .back-btn-six:hover,
+    .adjust-btn:hover,
+    .version-btn:hover {
+      background-color: #45a049;
+      color: white;
+    }
+        </style>
+        </head>
+    
+    <body class="centered-wrapper">
+      <div class="feedback-container">
+        <text style="font-weight: bold; color: green">Here's why we think this is a good email:</text>
+        <br>
+        <text id="explanation"></text>
+</div>
+<br>
+        <div id="new" class="subject-container">
+          <text style="font-weight: bold;">Subject Line:</text>
+          <br>
+          <text id="subject" contenteditable="true"></text>
+          <br>
+          <br>
+            <text style="font-weight: bold;">Email Body:</text>
+            <br>
+            <text id="content" contenteditable="true"></text> 
+        </div>
+
+
+  <br>
+
+  <div class = "container">
+    <input id="adjustments" class="input-field" placeholder="Explain how you would like to change the email.">
+  </div>
+
+  <br>
+
+  <div style="text-align:center;">
+    <button class="back-btn-five" onclick="final_backer_known()">Edit Inputs</button>
+    <button class="adjust-btn" onclick="adjust_button()">Regenerate</button>
+  </div>
+
+  <br>
+
+    </body>
+
 
 {% endblock %}
 
