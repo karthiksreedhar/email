@@ -9,7 +9,7 @@ import openai
 import PyPDF2
 
 import secrets
-openai.api_key = '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'
+openai.api_key = 'ENTER YOUR KEY HERE'
 
 
 
